@@ -1,2 +1,4 @@
 output-sam.yaml
 target/
+.vscode/
+.DS_Store
