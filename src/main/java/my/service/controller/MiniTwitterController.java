@@ -8,6 +8,8 @@ import my.service.dto.FollowerDTO;
 import my.service.dto.TweetDTO;
 import my.service.dto.FeedDTO;
 import my.service.responseentity.BasicResponseEntity;
+import my.service.responseentity.FeedResponseEntity;
+import my.service.responseentity.FollowerResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -32,32 +34,34 @@ public class MiniTwitterController {
         } catch (Exception e) {
             return new BasicResponseEntity(e.getMessage());
         }
-        return new BasicResponseEntity("success");
+        return new BasicResponseEntity();
     }
 
     @RequestMapping(path = "/feed/{userID}", method = RequestMethod.GET)
-    public FeedDTO getFeed(@PathVariable String userID) {
-        FeedDTO feedDTO = null;
+    public FeedResponseEntity getFeed(@PathVariable String userID) {
+        FeedResponseEntity res = new FeedResponseEntity();
 
         try {
             FeedDAO feedDAO = new FeedDAO();
-            feedDTO = feedDAO.getFeed(userID);
+            FeedDTO feedDTO = feedDAO.getFeed(userID);
+            res.setData(feedDTO);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            res.setMessage(e.getMessage());
         }
-        return feedDTO;
+        return res;
     }
 
     @RequestMapping(path = "/followers/{userID}", method = RequestMethod.GET)
-    public FollowerDTO getFollowers(@PathVariable String userID) {
-        FollowerDTO followerDTO = null;
+    public FollowerResponseEntity getFollowers(@PathVariable String userID) {
+        FollowerResponseEntity res = new FollowerResponseEntity();
 
         try {
             FollowerDAO followerDAO = new FollowerDAO();
-            followerDTO = followerDAO.getFollowers(userID);
+            FollowerDTO followerDTO = followerDAO.getFollowers(userID);
+            res.setData(followerDTO);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            res.setMessage(e.getMessage());
         }
-        return followerDTO;
+        return res;
     }
 }
