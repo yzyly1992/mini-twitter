@@ -2,7 +2,9 @@ package my.service.controller;
 
 
 import my.service.dao.FeedDAO;
+import my.service.dao.FollowerDAO;
 import my.service.dao.TweetDAO;
+import my.service.dto.FollowerDTO;
 import my.service.dto.TweetDTO;
 import my.service.dto.FeedDTO;
 import my.service.responseentity.BasicResponseEntity;
@@ -44,5 +46,18 @@ public class MiniTwitterController {
             System.out.println(e.getMessage());
         }
         return feedDTO;
+    }
+
+    @RequestMapping(path = "/followers/{userID}", method = RequestMethod.GET)
+    public FollowerDTO getFollowers(@PathVariable String userID) {
+        FollowerDTO followerDTO = null;
+
+        try {
+            FollowerDAO followerDAO = new FollowerDAO();
+            followerDTO = followerDAO.getFollowers(userID);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return followerDTO;
     }
 }
