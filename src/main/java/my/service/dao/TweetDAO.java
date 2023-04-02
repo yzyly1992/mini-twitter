@@ -23,8 +23,12 @@ public class TweetDAO {
         FollowerDTO followers = followerDAO.getFollowers(userID);
 
         FeedDAO feedDAO = new FeedDAO();
+        RedisDAO redisDAO = new RedisDAO();
         for (String follower : followers.getFollowersList()) {
             feedDAO.addTweetToFeed(follower, tweetDTO);
+
+            // Also, populate this tweet to redis
+            redisDAO.addTweetToFeed(follower, tweetDTO);
         }
     }
 }

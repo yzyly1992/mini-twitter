@@ -3,6 +3,7 @@ package my.service.controller;
 
 import my.service.dao.FeedDAO;
 import my.service.dao.FollowerDAO;
+import my.service.dao.RedisDAO;
 import my.service.dao.TweetDAO;
 import my.service.dto.FollowerDTO;
 import my.service.dto.TweetDTO;
@@ -42,8 +43,13 @@ public class MiniTwitterController {
         FeedResponseEntity res = new FeedResponseEntity();
 
         try {
-            FeedDAO feedDAO = new FeedDAO();
-            FeedDTO feedDTO = feedDAO.getFeed(userID);
+            // These lines are getting feeds from DynamoDB
+            //  FeedDAO feedDAO = new FeedDAO();
+            //  FeedDTO feedDTO = feedDAO.getFeed(userID);
+
+            // These lines are getting feeds from Redis
+            RedisDAO redisDAO = new RedisDAO();
+            FeedDTO feedDTO = redisDAO.getFeed(userID);
             res.setData(feedDTO);
         } catch (Exception e) {
             res.setMessage(e.getMessage());
