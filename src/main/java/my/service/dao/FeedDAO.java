@@ -39,4 +39,15 @@ public class FeedDAO {
         dbClientPool.returnObject(dbClient);
         return returnDTO;
     }
+
+    public void addTweetToFeed(String userID, TweetDTO tweetDTO) throws Exception {
+        AmazonDynamoDB dbClient = dbClientPool.borrowObject();
+        DynamoDBMapper mapper = new DynamoDBMapper(dbClient);
+
+        FeedDTO feedDTO = this.getFeed(userID);
+        feedDTO.getTweetsList().add(tweetDTO);
+        mapper.save(feedDTO);
+
+        dbClientPool.returnObject(dbClient);
+    }
 }
