@@ -11,15 +11,10 @@ public class TweetDAO {
         dbClientPool = DynamoClientPool.getInstance();
     }
 
-    public void postTweet(TweetDTO tweetDTO) {
-        try {
-            AmazonDynamoDB dbClient = dbClientPool.borrowObject();
-            DynamoDBMapper mapper = new DynamoDBMapper(dbClient);
-            mapper.save(tweetDTO);
-            dbClientPool.returnObject(dbClient);
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    public void postTweet(TweetDTO tweetDTO) throws Exception {
+        AmazonDynamoDB dbClient = dbClientPool.borrowObject();
+        DynamoDBMapper mapper = new DynamoDBMapper(dbClient);
+        mapper.save(tweetDTO);
+        dbClientPool.returnObject(dbClient);
     }
 }
