@@ -2,6 +2,9 @@ package my.service.responseentity;
 
 public class BasicResponseEntity {
 
+    public BasicResponseEntity() {
+        this.message = "success";
+    }
     public BasicResponseEntity(String message) {
         this.message = message;
     }
