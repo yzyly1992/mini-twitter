@@ -60,7 +60,9 @@ public class FollowerDAO {
         else {
             followers = results.get(0);
         }
-        followers.getFollowersList().add(follower);
+        if (!followers.getFollowersList().contains(follower)) {
+            followers.getFollowersList().add(follower);
+        }
 
         mapper.save(followers);
         dbClientPool.returnObject(dbClient);
