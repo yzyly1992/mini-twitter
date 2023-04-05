@@ -5,6 +5,7 @@ import my.service.dao.FeedDAO;
 import my.service.dao.FollowerDAO;
 import my.service.dao.RedisDAO;
 import my.service.dao.TweetDAO;
+import my.service.dto.FollowDTO;
 import my.service.dto.FollowerDTO;
 import my.service.dto.TweetDTO;
 import my.service.dto.FeedDTO;
@@ -65,6 +66,20 @@ public class MiniTwitterController {
             FollowerDAO followerDAO = new FollowerDAO();
             FollowerDTO followerDTO = followerDAO.getFollowers(userID);
             res.setData(followerDTO);
+        } catch (Exception e) {
+            res.setMessage(e.getMessage());
+        }
+        return res;
+    }
+
+
+    @RequestMapping(path = "/follow", method = RequestMethod.POST)
+    public BasicResponseEntity follow(@RequestBody FollowDTO follow) {
+        BasicResponseEntity res = new BasicResponseEntity();
+
+        try {
+            FollowerDAO followerDAO = new FollowerDAO();
+            followerDAO.follow(follow.getFollower(), follow.getFollowee());
         } catch (Exception e) {
             res.setMessage(e.getMessage());
         }

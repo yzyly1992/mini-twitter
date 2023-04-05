@@ -4,9 +4,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import my.service.dto.FeedDTO;
 import my.service.dto.FollowerDTO;
-import my.service.dto.TweetDTO;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import java.util.ArrayList;
@@ -40,5 +38,31 @@ public class FollowerDAO {
         }
         dbClientPool.returnObject(dbClient);
         return returnDTO;
+    }
+
+    public void follow(String follower, String followee) throws Exception {
+        AmazonDynamoDB dbClient = dbClientPool.borrowObject();
+        DynamoDBMapper mapper = new DynamoDBMapper(dbClient);
+
+        FollowerDTO queryDTO = new FollowerDTO();
+        queryDTO.setUserID(followee);
+
+        DynamoDBQueryExpression<FollowerDTO> query = new DynamoDBQueryExpression<FollowerDTO>().withHashKeyValues(queryDTO);
+
+        PaginatedQueryList<FollowerDTO> results = mapper.query(FollowerDTO.class, query);
+
+        FollowerDTO followers = null;
+        if (results.isEmpty()) {
+            followers = new FollowerDTO();
+            followers.setUserID(followee);
+            followers.setFollowersList(new ArrayList<>());
+        }
+        else {
+            followers = results.get(0);
+        }
+        followers.getFollowersList().add(follower);
+
+        mapper.save(followers);
+        dbClientPool.returnObject(dbClient);
     }
 }
