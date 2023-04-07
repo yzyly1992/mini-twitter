@@ -1,33 +1,45 @@
-# lambda-springboot serverless API
-The lambda-springboot project, created with [`aws-serverless-java-container`](https://github.com/awslabs/aws-serverless-java-container).
+# Mini-Twitter Scalable System
+Team: Lin Li, Fangxiao Guo, Zhiyuan Yang  
 
-The starter project defines a simple `/ping` resource that can accept `GET` requests with its tests.
+##### Project Introduction
+Mini-Twitter project design and develop a highly scalable system to provide services of post tweet, read feed, and follow user. We will experiment and test on two different caching strategies, analysis the system's performance and trade-off. 
 
-The project folder also includes a `sam.yaml` file. You can use this [SAM](https://github.com/awslabs/serverless-application-model) file to deploy the project to AWS Lambda and Amazon API Gateway or test in local with [SAM Local](https://github.com/awslabs/aws-sam-local). 
+##### Architecture
+![architecture](https://i.postimg.cc/fbT2f43C/Snipaste-2023-04-06-16-36-30.jpg)
 
-Using [Maven](https://maven.apache.org/), you can create an AWS Lambda-compatible jar file simply by running the maven package command from the projct folder.
+##### API Design
+- POST /tweet
+- POST /follow
+- GET /followers/{userID}
+- GET /feed/{userID}
 
+##### Database Design
+- followers: userID, followersList(list of IDs)
+- feeds: userID, tweetsList(list of tweets)
+- tweets: tweetID, userID, content, timestamp
+
+##### Database Update Logic
+Push Model:
+User postTweet -> getFollower -> write new tweet to followers' feed
+
+##### Redis/Cache Design
+- feeds: userID, tweetsList
+
+##### Cache Strategy
+Write-through:
+User postTweet -> update cache  
+User getFeed -> directly getFeed from cache
+
+
+
+##### Usage
+
+Build the project with Maven:
 ```bash
-$ mvn archetype:generate -DartifactId=my-spring-api -DarchetypeGroupId=com.amazonaws.serverless.archetypes -DarchetypeArtifactId=aws-serverless-spring-archetype -DarchetypeVersion=1.0-SNAPSHOT -DgroupId=com.sapessi.spring -Dversion=0.1 -Dinteractive=false
-$ cd my-spring-api
 $ mvn clean package
-
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 6.546 s
-[INFO] Finished at: 2018-02-15T08:39:33-08:00
-[INFO] Final Memory: XXM/XXXM
-[INFO] ------------------------------------------------------------------------
 ```
 
-You can use [AWS SAM Local](https://github.com/awslabs/aws-sam-local) to start your project.
-
-First, install SAM local:
-
-```bash
-$ npm install -g aws-sam-local
-```
+Install [AWS SAM Local](https://github.com/awslabs/aws-sam-local) to start your project locally.
 
 Next, from the project root folder - where the `sam.yaml` file is located - start the API with the SAM Local CLI.
 
@@ -64,17 +76,17 @@ aws cloudformation deploy --template-file /your/path/output-sam.yaml --stack-nam
 As the command output suggests, you can now use the cli to deploy the application. Choose a stack name and run the `aws cloudformation deploy` command from the output of the package command.
  
 ```
-$ aws cloudformation deploy --template-file output-sam.yaml --stack-name ServerlessSpringApi --capabilities CAPABILITY_IAM
+$ aws cloudformation deploy --template-file output-sam.yaml --stack-name MiniTwitterApi --capabilities CAPABILITY_IAM
 ```
 
-Once the application is deployed, you can describe the stack to show the API endpoint that was created. The endpoint should be the `ServerlessSpringApi` key of the `Outputs` property:
+Once the application is deployed, you can describe the stack to show the API endpoint that was created. The endpoint should be the `MiniTwitterApi` key of the `Outputs` property:
 
 ```
-$ aws cloudformation describe-stacks --stack-name ServerlessSpringApi
+$ aws cloudformation describe-stacks --stack-name MiniTwitterApi
 {
     "Stacks": [
         {
-            "StackId": "arn:aws:cloudformation:us-west-2:xxxxxxxx:stack/ServerlessSpringApi/xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx", 
+            "StackId": "arn:aws:cloudformation:us-west-2:xxxxxxxx:stack/MiniTwitterApi/xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx", 
             "Description": "AWS Serverless Spring API - my.service::lambda-springboot", 
             "Tags": [], 
             "Outputs": [
@@ -89,7 +101,7 @@ $ aws cloudformation describe-stacks --stack-name ServerlessSpringApi
             "Capabilities": [
                 "CAPABILITY_IAM"
             ], 
-            "StackName": "ServerlessSpringApi", 
+            "StackName": "MiniTwitterApi", 
             "NotificationARNs": [], 
             "StackStatus": "UPDATE_COMPLETE"
         }
