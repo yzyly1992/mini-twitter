@@ -45,12 +45,12 @@ public class MiniTwitterController {
 
         try {
             // These lines are getting feeds from DynamoDB
-            //  FeedDAO feedDAO = new FeedDAO();
-            //  FeedDTO feedDTO = feedDAO.getFeed(userID);
+             FeedDAO feedDAO = new FeedDAO();
+             FeedDTO feedDTO = feedDAO.getFeed(userID);
 
             // These lines are getting feeds from Redis
-            RedisDAO redisDAO = new RedisDAO();
-            FeedDTO feedDTO = redisDAO.getFeed(userID);
+            // RedisDAO redisDAO = new RedisDAO();
+            // FeedDTO feedDTO = redisDAO.getFeed(userID);
             res.setData(feedDTO);
         } catch (Exception e) {
             res.setMessage(e.getMessage());
