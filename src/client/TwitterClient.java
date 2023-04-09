@@ -21,7 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 
 public class TwitterClient {
     private final static int NUMTHREAD = 1;
-    private final static int REQUESTPERTHREAD = 10;
+    private final static int REQUESTPERTHREAD = 1000;
     private final static int ATTEMPT = 5;
     static int successTimes = 0;
     static int failedTimes = 0;

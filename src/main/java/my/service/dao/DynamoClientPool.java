@@ -9,10 +9,11 @@ public class DynamoClientPool {
 
     private static final GenericObjectPool<AmazonDynamoDB> dbClientPool;
     static {
-        GenericObjectPoolConfig<AmazonDynamoDB> dbPoolConfig = new GenericObjectPoolConfig<>();
-        dbPoolConfig.setMaxTotal(20);
+        // GenericObjectPoolConfig<AmazonDynamoDB> dbPoolConfig = new GenericObjectPoolConfig<>();
+        // dbPoolConfig.setMaxTotal(20);
         PooledObjectFactory<AmazonDynamoDB> clientPoolFactory = new DynamoConnectionFactory();
-        dbClientPool = new GenericObjectPool<>(clientPoolFactory, dbPoolConfig);
+        dbClientPool = new GenericObjectPool<>(clientPoolFactory);
+        // dbClientPool = new GenericObjectPool<>(clientPoolFactory, dbPoolConfig);
     }
 
     public static GenericObjectPool<AmazonDynamoDB> getInstance() {
