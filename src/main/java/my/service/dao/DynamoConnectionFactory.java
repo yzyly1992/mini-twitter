@@ -1,5 +1,6 @@
 package my.service.dao;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -12,9 +13,13 @@ public class DynamoConnectionFactory extends BasePooledObjectFactory<AmazonDynam
 
     @Override
     public AmazonDynamoDB create() throws Exception {
+        // return AmazonDynamoDBClientBuilder.standard()
+        //         .withRegion("us-west-2")
+        //         .build();
         return AmazonDynamoDBClientBuilder.standard()
-                .withRegion("us-west-2")
-                .build();
+        .withEndpointConfiguration(
+        new AwsClientBuilder.EndpointConfiguration("http://54.218.203.0:8000", "us-west-2"))
+        .build(); 
     }
 
     @Override
