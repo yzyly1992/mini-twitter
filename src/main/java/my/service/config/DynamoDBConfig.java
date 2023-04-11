@@ -1,5 +1,6 @@
 package my.service.config;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
@@ -12,7 +13,7 @@ public class DynamoDBConfig {
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
         return AmazonDynamoDBClientBuilder.standard()
-                .withRegion("us-west-2")
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://34.213.26.95:8000", "us-west-2"))
                 .build();
     }
 }

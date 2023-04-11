@@ -39,6 +39,21 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>my.service.Application</mainClass>
+          <layout>JAR</layout>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <repositories>
@@ -106,5 +121,6 @@
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
+    <start-class>my.service.Application</start-class>
   </properties>
 </project>
