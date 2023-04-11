@@ -3,7 +3,6 @@ package my.service.controller;
 
 import my.service.dao.FeedDAO;
 import my.service.dao.FollowerDAO;
-import my.service.dao.RedisDAO;
 import my.service.dao.TweetDAO;
 import my.service.dto.FollowDTO;
 import my.service.dto.FollowerDTO;
