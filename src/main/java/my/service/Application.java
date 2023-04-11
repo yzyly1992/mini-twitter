@@ -3,7 +3,7 @@ package my.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 @SpringBootApplication
-@ComponentScan(basePackages = "my.service.controller")
+@ComponentScan(basePackages = {"my.service.controller", "my.service.dao", "my.service.repository", "my.service.config"})
 public class Application extends SpringBootServletInitializer {
 
     // silence console logging
@@ -48,8 +48,8 @@ public class Application extends SpringBootServletInitializer {
      * By default, an ExceptionHandlerExceptionResolver is created which creates many dependent object, including
      * an expensive ObjectMapper instance.
      */
-    @Bean
-    public HandlerExceptionResolver handlerExceptionResolver() {
+    @Bean(name = "myHandlerExceptionResolver")
+    public HandlerExceptionResolver myHandlerExceptionResolver() {
         return new HandlerExceptionResolver() {
 
             @Override

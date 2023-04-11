@@ -1,11 +1,13 @@
 package my.service.dto;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import org.springframework.data.annotation.Id;
 
 import java.util.List;
 
 @DynamoDBTable(tableName = "followers")
 public class FollowerDTO {
+    @Id
     private String userID;
 
     private List<String> followersList;

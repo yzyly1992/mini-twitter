@@ -12,6 +12,7 @@ import my.service.dto.FeedDTO;
 import my.service.responseentity.BasicResponseEntity;
 import my.service.responseentity.FeedResponseEntity;
 import my.service.responseentity.FollowerResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -23,6 +24,20 @@ import java.util.UUID;
 @RestController
 @EnableWebMvc
 public class MiniTwitterController {
+
+    private final TweetDAO tweetDAO;
+
+    private final FeedDAO feedDAO;
+
+    private final FollowerDAO followerDAO;
+
+    @Autowired
+    public MiniTwitterController(TweetDAO tweetDAO, FeedDAO feedDAO, FollowerDAO followerDAO) {
+        this.tweetDAO = tweetDAO;
+        this.feedDAO = feedDAO;
+        this.followerDAO = followerDAO;
+    }
+
     @RequestMapping(path = "/tweet", method = RequestMethod.POST)
     public BasicResponseEntity postTweet(@RequestBody TweetDTO tweet) {
         tweet.setTweetID(UUID.randomUUID().toString());
@@ -31,7 +46,6 @@ public class MiniTwitterController {
         tweet.setTimestamp(timestamp);
 
         try {
-            TweetDAO tweetDAO = new TweetDAO();
             tweetDAO.postTweet(tweet);
         } catch (Exception e) {
             return new BasicResponseEntity(e.getMessage());
@@ -63,7 +77,6 @@ public class MiniTwitterController {
         FollowerResponseEntity res = new FollowerResponseEntity();
 
         try {
-            FollowerDAO followerDAO = new FollowerDAO();
             FollowerDTO followerDTO = followerDAO.getFollowers(userID);
             res.setData(followerDTO);
         } catch (Exception e) {
@@ -78,7 +91,6 @@ public class MiniTwitterController {
         BasicResponseEntity res = new BasicResponseEntity();
 
         try {
-            FollowerDAO followerDAO = new FollowerDAO();
             followerDAO.follow(follow.getFollower(), follow.getFollowee());
         } catch (Exception e) {
             res.setMessage(e.getMessage());
