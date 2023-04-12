@@ -20,7 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 public class TwitterClient {
-    private final static int NUMTHREAD = 100;
+    private final static int NUMTHREAD = 10;
     private final static int REQUESTPERTHREAD = 200;
     private final static int ATTEMPT = 5;
     static int successTimes = 0;
@@ -32,7 +32,7 @@ public class TwitterClient {
     static int successTimesFollower = 0;
     static int failedTimesFollower = 0;
 
-    private static final String SERVER_URL = "http://18.237.73.185:8080/";
+    private static final String SERVER_URL = "http://52.24.83.103:8080/";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) throws InterruptedException, IOException {

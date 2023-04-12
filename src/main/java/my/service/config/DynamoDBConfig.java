@@ -22,7 +22,7 @@ public class DynamoDBConfig {
         //     .withEndpointConfiguration(new EndpointConfiguration("dax://dax.iomfja.dax-clusters.us-west-2.amazonaws.com", "us-west-2"))
         //     .build();
         AmazonDaxClientBuilder daxClientBuilder = AmazonDaxClientBuilder.standard();
-        daxClientBuilder.withEndpointConfiguration("dax.iomfja.dax-clusters.us-west-2.amazonaws.com:8111");
+        daxClientBuilder.withRegion("us-west-2").withEndpointConfiguration("dax.iomfja.dax-clusters.us-west-2.amazonaws.com:8111");
         AmazonDynamoDB client = daxClientBuilder.build();
         return client;
     }
