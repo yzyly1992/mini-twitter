@@ -1,7 +1,6 @@
 package my.service.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import my.service.dto.FollowDTO;
 import my.service.dto.TweetDTO;
@@ -14,21 +13,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.Random;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 public class TwitterClient {
     private final static int NUMTHREAD = 1;
     private final static int REQUESTPERTHREAD = 10;
-    private final static int ATTEMPT = 5;
     static int successTimes = 0;
     static int failedTimes = 0;
     static int successTimesFollow = 0;
@@ -68,14 +59,18 @@ public class TwitterClient {
                     try {
                         postToServerTweet(tweet);
                         long latency = System.currentTimeMillis() - singleStartTweet;
-                        writerPostTweet.writeNext(new String[] {String.valueOf(singleStartTweet), "POST", String.valueOf(latency), String.valueOf(200)});
+                        writerPostTweet.writeNext(new String[] { String.valueOf(singleStartTweet), "POST",
+                                String.valueOf(latency), String.valueOf(200) });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
                 completed.countDown();
             };
             new Thread(thread).start();
-        };
+        }
+        ;
+        writerPostTweet.close();
         completed.await();
         long end = System.currentTimeMillis();
         double throughput = 1000 * NUMTHREAD * REQUESTPERTHREAD / (end - start);
@@ -104,7 +99,8 @@ public class TwitterClient {
                     try {
                         postToServerFollow(follow);
                         long latency = System.currentTimeMillis() - singlePostFollower;
-                        writerPostTweet.writeNext(new String[] {String.valueOf(singlePostFollower), "POST", String.valueOf(latency), String.valueOf(200)});
+                        writerPostFollower.writeNext(new String[] { String.valueOf(singlePostFollower), "POST",
+                                String.valueOf(latency), String.valueOf(200) });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -113,12 +109,14 @@ public class TwitterClient {
             };
             new Thread(thread).start();
         }
+        writerPostFollower.close();
         completed.await();
         long endFollow = System.currentTimeMillis();
         double throughputFollow = 1000 * NUMTHREAD * REQUESTPERTHREAD / (endFollow - startFollow);
         System.out.println("The post follow requests' successful times is " + successTimesFollow + ", failed times is: "
                 + failedTimesFollow);
         System.out.println("The post follow average throughput is " + throughputFollow + " requests per second.");
+        printPerformance("postFollower");
 
         CountDownLatch completedFeed = new CountDownLatch(NUMTHREAD);
         long startFeed = System.currentTimeMillis();
@@ -129,7 +127,8 @@ public class TwitterClient {
                     try {
                         getFeed();
                         long latency = System.currentTimeMillis() - singleGetFeed;
-                        writerPostTweet.writeNext(new String[] {String.valueOf(singleGetFeed), "GET", String.valueOf(latency), String.valueOf(200)});
+                        writerGetFeed.writeNext(new String[] { String.valueOf(singleGetFeed), "GET",
+                                String.valueOf(latency), String.valueOf(200) });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -137,13 +136,16 @@ public class TwitterClient {
                 completedFeed.countDown();
             };
             new Thread(thread).start();
-        };
+        }
+        ;
+        writerGetFeed.close();
         completedFeed.await();
         long endFeed = System.currentTimeMillis();
         double throughputFeed = 1000 * NUMTHREAD * REQUESTPERTHREAD / (endFeed - startFeed);
         System.out.println("The get feed requests' successful times is " + successTimesFeed + ", failed times is: "
                 + failedTimesFeed);
         System.out.println("The get feed average throughput is " + throughputFeed + " requests per second.");
+        printPerformance("getFeed");
 
         CountDownLatch completedFollower = new CountDownLatch(NUMTHREAD);
         long startFollower = System.currentTimeMillis();
@@ -154,7 +156,8 @@ public class TwitterClient {
                     try {
                         getFollowers();
                         long latency = System.currentTimeMillis() - singleGetFollower;
-                        writerPostTweet.writeNext(new String[] {String.valueOf(singleGetFollower), "GET", String.valueOf(latency), String.valueOf(200)});
+                        writerGetFollower.writeNext(new String[] { String.valueOf(singleGetFollower), "GET",
+                                String.valueOf(latency), String.valueOf(200) });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -162,7 +165,9 @@ public class TwitterClient {
                 completedFollower.countDown();
             };
             new Thread(thread).start();
-        };
+        }
+        ;
+        writerGetFollower.close();
         completedFollower.await();
         long endFollower = System.currentTimeMillis();
         double throughputFollower = 1000 * NUMTHREAD * REQUESTPERTHREAD / (endFollower - startFollower);
@@ -171,7 +176,7 @@ public class TwitterClient {
                         + failedTimesFollower);
         System.out
                 .println("The get followerlist average throughput is " + throughputFollower + " requests per second.");
-
+        printPerformance("getFollower");
     }
 
     private static void postToServerTweet(TweetDTO tweet) throws Exception {
@@ -244,14 +249,6 @@ public class TwitterClient {
         URL url = new URL(SERVER_URL + "feed/" + (new Random().nextInt(5000) + 1));
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        // BufferedReader in = new BufferedReader(new
-        // InputStreamReader(con.getInputStream()));
-        // String inputLine;
-        // StringBuilder response = new StringBuilder();
-        // while ((inputLine = in.readLine()) != null) {
-        // response.append(inputLine);
-        // }
-        // in.close();
         int statusCode = con.getResponseCode();
         if (statusCode >= 200 && statusCode < 300) {
             successTimesFeed += 1;
@@ -264,14 +261,6 @@ public class TwitterClient {
         URL url = new URL(SERVER_URL + "followers/" + (new Random().nextInt(5000) + 1));
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        // BufferedReader in = new BufferedReader(new
-        // InputStreamReader(con.getInputStream()));
-        // String inputLine;
-        // StringBuilder response = new StringBuilder();
-        // while ((inputLine = in.readLine()) != null) {
-        // response.append(inputLine);
-        // }
-        // in.close();
         int statusCode = con.getResponseCode();
         if (statusCode >= 200 && statusCode < 300) {
             successTimesFollower += 1;
@@ -284,7 +273,7 @@ public class TwitterClient {
         String filePath = "/";
         if (file.equals("postTweet")) {
             filePath = "./recordPostTweet.csv";
-        } else if (file.equals("PostFollower")) {
+        } else if (file.equals("postFollower")) {
             filePath = "./recordPostFollower.csv";
         } else if (file.equals("getFeed")) {
             filePath = "./recordGetFeed.csv";
@@ -318,5 +307,4 @@ public class TwitterClient {
                 + median + "ms,\np99 (99th percentile) response time is " + p99 +
                 "ms,\nmin and max response time are " + min + "ms and " + max + "ms");
     }
-
 }
